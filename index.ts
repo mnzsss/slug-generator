@@ -44,9 +44,7 @@ function run() {
 
     var suggestionsSheet = ss.getSheetByName("Sugestões");
 
-    suggestionsSheet
-      .getRange(2, 1, numRows, numCols)
-      .setValues(slugs.reverse());
+    suggestionsSheet.getRange(2, 1, numRows, numCols).setValues(slugs);
   } catch (error) {
     // deal with any errors
     Logger.log(error);
