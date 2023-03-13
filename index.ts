@@ -37,6 +37,7 @@ function run() {
       slug.sku,
       slug.current,
       slug.recommended,
+      slug.current,
     ]);
 
     var numRows = slugs.length;
