@@ -64,27 +64,34 @@ function saveSlugs() {
 
     const data = suggestionsSheet.getDataRange().getValues() as Array<string[]>;
 
-    const slugs = data.map((row) => ({
-      sku: row[0],
-      slug: row[2],
-    }));
+    const slugs = data
+      .map((row) => ({
+        sku: row[0],
+        slug: row[3],
+        ...(!!row[4] ? { description: row[4] } : {}),
+      }))
+      .shift();
 
     const endpoint = getOptimusEndpoint();
+    const payload = {
+      slugs,
+    };
 
-    const status = UrlFetchApp.fetch(`${endpoint}/products-slug`, {
+    const response = UrlFetchApp.fetch(`${endpoint}/products-slug`, {
       muteHttpExceptions: true,
       contentType: "application/json",
       method: "post",
-      payload: {
-        slugs,
-      },
-    }).getResponseCode();
+      payload: JSON.stringify(payload),
+    });
 
-    if (status !== 200) {
-      throw new Error("Service error");
+    const statusCode = response.getResponseCode();
+    const bodyRespnse = response.getContentText();
+
+    if (statusCode !== 200) {
+      throw new Error(bodyRespnse);
     }
 
-    ss.toast("Slugs Cadastrados! " + status);
+    ss.toast("Slugs Cadastrados! " + bodyRespnse);
   } catch (error) {
     ss.toast("Erro ao cadastrar slugs");
 
