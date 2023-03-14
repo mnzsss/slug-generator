@@ -13,9 +13,8 @@ const enviroments = {
 };
 
 function getCampaignSuggestions() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-
     // Config Sheet
     const configSheet = ss.getSheetByName("Config");
 
@@ -49,36 +48,46 @@ function getCampaignSuggestions() {
     const suggestionsSheet = ss.getSheetByName("Sugestões");
 
     suggestionsSheet.getRange(2, 1, numRows, numCols).setValues(slugs);
+
+    ss.toast("Sugestões Atualizadas!");
   } catch (error) {
+    ss.toast("Erro ao atualizar sugestões.");
     // deal with any errors
     Logger.log(error);
   }
 }
 
 function saveSlugs() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-
     const suggestionsSheet = ss.getSheetByName("Sugestões");
 
     const data = suggestionsSheet.getDataRange().getValues() as Array<string[]>;
 
-    const values = data.map((row) => ({
+    const slugs = data.map((row) => ({
       sku: row[0],
       slug: row[2],
     }));
 
     const endpoint = getOptimusEndpoint();
 
-    UrlFetchApp.fetch(`${endpoint}/products-slug`, {
+    const status = UrlFetchApp.fetch(`${endpoint}/products-slug`, {
       muteHttpExceptions: true,
       contentType: "application/json",
       method: "post",
-      payload: values,
-    });
+      payload: {
+        slugs,
+      },
+    }).getResponseCode();
 
-    ss.toast("Slugs Cadastrados!");
+    if (status !== 200) {
+      throw new Error("Service error");
+    }
+
+    ss.toast("Slugs Cadastrados! " + status);
   } catch (error) {
+    ss.toast("Erro ao cadastrar slugs");
+
     // deal with any errors
     Logger.log(error);
   }
