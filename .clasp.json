@@ -1,1 +1,6 @@
-{"scriptId":"1Knn7wOCC6CCpEGOKX09iRArXlKRVgOBHBBIfsjxbh7Q_ZfTdZg72J3CR","rootDir":"/home/mnzs/tmp/slug-generator","parentId":["1qZgmjMNuuzo_RDGrU1_JxKIfbNupa0rO7P1YzALsIzM"]}
+{
+  "scriptId": "1Knn7wOCC6CCpEGOKX09iRArXlKRVgOBHBBIfsjxbh7Q_ZfTdZg72J3CR",
+  "parentId": ["1qZgmjMNuuzo_RDGrU1_JxKIfbNupa0rO7P1YzALsIzM"],
+  "rootDir": "src/",
+  "fileExtension": "ts"
+}

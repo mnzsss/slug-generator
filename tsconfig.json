@@ -1,6 +1,14 @@
 {
   "compilerOptions": {
-    "lib": ["esnext"],
-    "experimentalDecorators": true
+    "lib": [
+      "esnext"
+    ],
+    "allowJs": true,
+    "checkJs": true,
+    "types": [
+      "google-apps-script"
+    ],
+    "experimentalDecorators": true,
+    "baseUrl": "./src"
   }
 }
