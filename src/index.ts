@@ -49,13 +49,75 @@ function getCampaignSuggestions() {
 
     const suggestionsSheet = ss.getSheetByName("Sugestões");
 
+    clearSheet();
+
     suggestionsSheet.getRange(2, 1, numRows, numCols).setValues(slugs);
+
+    highlightDuplicatedValues();
 
     ss.toast("Sugestões Atualizadas!");
   } catch (error) {
     ss.toast("Erro ao atualizar sugestões.");
     // deal with any errors
     Logger.log(error);
+  }
+}
+
+/**
+ * Clear suggestions values
+ */
+function clearSheet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sugestões");
+  var range = sheet.getDataRange();
+  var values = range.getValues();
+  var numRows = range.getNumRows();
+
+  // Loop through each row in the sheet and clear values if not in the first row
+  for (var i = 1; i < numRows; i++) {
+    for (var j = 0; j < values[i].length; j++) {
+      var cell = sheet.getRange(i + 1, j + 1);
+      if (i > 0) {
+        cell.clearContent();
+        cell.setBackground(null);
+      }
+    }
+  }
+}
+
+/**
+ * Function to highlight the duplicated slugs
+ */
+function highlightDuplicatedValues() {
+  const sheet =
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sugestões");
+  const range = sheet.getRange("D2:D");
+  const values = range.getValues();
+  const numRows = range.getNumRows();
+  const valueCounts: Record<string, { count: number; row: number }> = {};
+
+  // Loop through each cell in the column and count the occurrences of each value
+  for (let i = 0; i < numRows; i++) {
+    const value = values[i][0];
+    if (value !== "") {
+      const key = value.toString().toLowerCase();
+      if (!valueCounts.hasOwnProperty(key)) {
+        valueCounts[key] = { count: 1, row: i + 2 };
+      } else {
+        valueCounts[key].count++;
+      }
+    }
+  }
+
+  // Loop through each value and highlight duplicates, reset non-duplicates
+  for (const key in valueCounts) {
+    const row = valueCounts[key].row;
+    const cell = sheet.getRange(row, 4);
+
+    if (valueCounts[key].count > 1) {
+      cell.setBackground("#f4c842");
+    } else {
+      cell.setBackground(null);
+    }
   }
 }
 
@@ -96,7 +158,7 @@ function saveSlugs() {
   }
 }
 
-const SECRET_PRODUCTION = "1234";
+const SECRET_PRODUCTION = "PARANAUEGUIDÃO";
 
 const credentials = {
   username: "googlescripts@bbrands.com.br",
@@ -121,9 +183,9 @@ function getEndpoint(service: Service) {
   const configEnvironment = configSheet.getRange("B3").getValue();
 
   if (configEnvironment === "Production") {
-    var ui = SpreadsheetApp.getUi(); // Same variations.
+    const ui = SpreadsheetApp.getUi(); // Same constiations.
 
-    var result = ui.prompt("Qual a senha de acesso: ");
+    const result = ui.prompt("Qual a senha de acesso: ");
 
     // Process the user's response.
     if (result.getResponseText() !== SECRET_PRODUCTION) {
