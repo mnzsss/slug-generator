@@ -137,13 +137,13 @@ function saveSlugs() {
 
     validateIfHasDuplicatedSlugs(suggestionsSheet);
 
-    const slugs = data
-      .map((row) => ({
-        sku: row[0],
-        slug: row[3],
-        ...(!!row[4] ? { description: row[4] } : {}),
-      }))
-      .shift();
+    const slugs = data.map((row) => ({
+      sku: row[0],
+      slug: row[3],
+      ...(!!row[4] ? { description: row[4] } : {}),
+    }));
+
+    slugs.shift();
 
     const response = request("/product-slug/upsert-products", "lucius", {
       payload: {
