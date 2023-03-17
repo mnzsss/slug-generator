@@ -43,7 +43,11 @@ function getCampaignSuggestions() {
 
       return [
         slug.sku,
-        slug.current ? `${getBeyoungUrl()}/${slug.current}/${slug.sku}` : null,
+        slug.current
+          ? `${getBeyoungUrl()}${slug.current.startsWith("/") ? "" : "/"}${
+              slug.current
+            }/${slug.sku}`
+          : null,
         recommended,
         recommended,
       ];
