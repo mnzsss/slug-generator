@@ -41,7 +41,7 @@ function getCampaignSuggestions() {
         ? slug.recommended
         : `/produtos${slug.recommended}`;
 
-      return [slug.sku, slug.current, recommended, slug.current ?? recommended];
+      return [slug.sku, slug.current, recommended, recommended];
     });
 
     const numRows = slugs.length;
