@@ -216,8 +216,7 @@ function getEndpoint(service: Service) {
 
     const result = ui.prompt("Qual a senha de acesso: ");
 
-    const SECRET_PRODUCTION =
-      PropertiesService.getScriptProperties().getProperty("PRODUCTION_SECRET");
+    const SECRET_PRODUCTION = getEnvVar("PRODUCTION_SECRET");
 
     // Process the user's response.
     if (!SECRET_PRODUCTION || result.getResponseText() !== SECRET_PRODUCTION) {
@@ -240,9 +239,20 @@ export function request(
 ) {
   const { payload, ...restOfOptions } = options;
 
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Config Sheet
+  const configSheet = ss.getSheetByName("Config");
+
+  // Options
+  const configEnvironment = configSheet.getRange("B3").getValue();
+
   const credentials = {
-    password: PropertiesService.getScriptProperties().getProperty("PASSWORD"),
-    email: PropertiesService.getScriptProperties().getProperty("EMAIL"),
+    password:
+      configEnvironment === "Production"
+        ? getEnvVar("PASSWORD_PRODUCTION")
+        : getEnvVar("PASSWORD"),
+    email: getEnvVar("EMAIL"),
   };
 
   if (!credentials.password || !credentials.email) {
@@ -288,4 +298,8 @@ function getBeyoungUrl() {
   const endpoint = urlPrefixWithEnvironment + ".beyoung.com.br";
 
   return endpoint;
+}
+
+function getEnvVar(code: string) {
+  return PropertiesService.getScriptProperties().getProperty(code);
 }
