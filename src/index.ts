@@ -194,13 +194,6 @@ function validateIfHasDuplicatedSlugs(
   }
 }
 
-const SECRET_PRODUCTION = "PARANAUEGUIDÃO";
-
-const credentials = {
-  username: "googlescripts@bbrands.com.br",
-  password: "4X5GhNxHEF4JE6FG",
-};
-
 const environments = {
   Production: "",
   Staging: ".staging",
@@ -223,8 +216,11 @@ function getEndpoint(service: Service) {
 
     const result = ui.prompt("Qual a senha de acesso: ");
 
+    const SECRET_PRODUCTION =
+      PropertiesService.getScriptProperties().getProperty("PRODUCTION_SECRET");
+
     // Process the user's response.
-    if (result.getResponseText() !== SECRET_PRODUCTION) {
+    if (SECRET_PRODUCTION || result.getResponseText() !== SECRET_PRODUCTION) {
       ui.alert("Sem permissão de acesso.");
       throw new Error("Sem permissão de acesso.");
     }
@@ -244,13 +240,22 @@ export function request(
 ) {
   const { payload, ...restOfOptions } = options;
 
+  const credentials = {
+    password: PropertiesService.getScriptProperties().getProperty("PASSWORD"),
+    email: PropertiesService.getScriptProperties().getProperty("EMAIL"),
+  };
+
+  if (!credentials.password || !credentials.email) {
+    throw new Error("Credenciais não encontradas");
+  }
+
   const response = UrlFetchApp.fetch(`${getEndpoint("gandalf")}/proxy`, {
     muteHttpExceptions: true,
     contentType: "application/json",
     method: "post",
     headers: {
       Authorization: `Basic ${Utilities.base64Encode(
-        `${credentials.username}:${credentials.password}`
+        `${credentials.email}:${credentials.password}`
       )}`,
       "x-proxy-url": `${getEndpoint(service)}${endpoint}`,
       ...restOfOptions.headers,
