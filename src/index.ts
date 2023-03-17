@@ -145,7 +145,7 @@ function saveSlugs() {
       }))
       .shift();
 
-    const response = request("/products-slug", "lucius", {
+    const response = request("/product-slug/upsert-products", "lucius", {
       payload: {
         slugs,
       },
