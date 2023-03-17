@@ -53,7 +53,7 @@ function getCampaignSuggestions() {
 
     suggestionsSheet.getRange(2, 1, numRows, numCols).setValues(slugs);
 
-    highlightDuplicatedValues();
+    highlightDuplicatedSlugs();
 
     ss.toast("Sugestões Atualizadas!");
   } catch (error) {
@@ -84,12 +84,7 @@ function clearSheet() {
   }
 }
 
-/**
- * Function to highlight the duplicated slugs
- */
-function highlightDuplicatedValues() {
-  const sheet =
-    SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sugestões");
+function getSlugsData(sheet: GoogleAppsScript.Spreadsheet.Sheet) {
   const range = sheet.getRange("D2:D");
   const values = range.getValues();
   const numRows = range.getNumRows();
@@ -108,12 +103,24 @@ function highlightDuplicatedValues() {
     }
   }
 
+  return valueCounts;
+}
+
+/**
+ * Function to highlight the duplicated slugs
+ */
+function highlightDuplicatedSlugs() {
+  const sheet =
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sugestões");
+
+  const slugs = getSlugsData(sheet);
+
   // Loop through each value and highlight duplicates, reset non-duplicates
-  for (const key in valueCounts) {
-    const row = valueCounts[key].row;
+  for (const key in slugs) {
+    const row = slugs[key].row;
     const cell = sheet.getRange(row, 4);
 
-    if (valueCounts[key].count > 1) {
+    if (slugs[key].count > 1) {
       cell.setBackground("#f4c842");
     } else {
       cell.setBackground(null);
@@ -127,6 +134,8 @@ function saveSlugs() {
     const suggestionsSheet = ss.getSheetByName("Sugestões");
 
     const data = suggestionsSheet.getDataRange().getValues() as Array<string[]>;
+
+    validateIfHasDuplicatedSlugs(suggestionsSheet);
 
     const slugs = data
       .map((row) => ({
@@ -151,10 +160,28 @@ function saveSlugs() {
 
     ss.toast("Slugs Cadastrados! " + bodyResponse);
   } catch (error) {
-    ss.toast("Erro ao cadastrar slugs");
+    if (error.message) {
+      ss.toast(error.message);
+    } else {
+      ss.toast("Erro ao cadastrar slugs");
+    }
 
     // deal with any errors
     Logger.log(error);
+  }
+}
+
+function validateIfHasDuplicatedSlugs(
+  sheet: GoogleAppsScript.Spreadsheet.Sheet
+) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const slugs = getSlugsData(sheet);
+
+  for (const key in slugs) {
+    if (slugs[key].count > 1) {
+      ss.toast("Existem slugs duplicados, verifique a planilha.");
+      throw new Error(`Existem slugs duplicados, verifique a planilha.`);
+    }
   }
 }
 
