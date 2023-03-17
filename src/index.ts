@@ -41,7 +41,12 @@ function getCampaignSuggestions() {
         ? slug.recommended
         : `/produtos${slug.recommended}`;
 
-      return [slug.sku, slug.current, recommended, recommended];
+      return [
+        slug.sku,
+        `${getBeyoungUrl()}/${slug.current}/${slug.sku}`,
+        recommended,
+        recommended,
+      ];
     });
 
     const numRows = slugs.length;
@@ -251,4 +256,27 @@ export function request(
   });
 
   return response;
+}
+
+const ByEnvironments = {
+  Production: "",
+  Staging: "staging",
+  Development: "dev",
+};
+
+function getBeyoungUrl() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Config Sheet
+  const configSheet = ss.getSheetByName("Config");
+
+  // Options
+  const configEnvironment = configSheet.getRange("B3").getValue();
+
+  const urlPrefix = `https://`;
+  const urlPrefixWithEnvironment =
+    urlPrefix + ByEnvironments[configEnvironment];
+  const endpoint = urlPrefixWithEnvironment + ".beyoung.com.br";
+
+  return endpoint;
 }
