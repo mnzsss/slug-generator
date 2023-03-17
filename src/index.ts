@@ -49,7 +49,7 @@ function getCampaignSuggestions() {
         slug.sku,
         slug.current ? `${getBeyoungUrl()}${currentSlug}` : null,
         recommended,
-        recommended,
+        slug.current,
       ];
     });
 
@@ -220,7 +220,7 @@ function getEndpoint(service: Service) {
       PropertiesService.getScriptProperties().getProperty("PRODUCTION_SECRET");
 
     // Process the user's response.
-    if (SECRET_PRODUCTION || result.getResponseText() !== SECRET_PRODUCTION) {
+    if (!SECRET_PRODUCTION || result.getResponseText() !== SECRET_PRODUCTION) {
       ui.alert("Sem permissão de acesso.");
       throw new Error("Sem permissão de acesso.");
     }
