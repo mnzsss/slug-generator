@@ -41,13 +41,13 @@ function getCampaignSuggestions() {
         ? slug.recommended
         : `/produtos${slug.recommended}`;
 
+      const currentSlug = slug.current?.startsWith("produtos/")
+        ? `/${slug.current}/${slug.sku}`
+        : slug.current;
+
       return [
         slug.sku,
-        slug.current
-          ? `${getBeyoungUrl()}${slug.current.startsWith("/") ? "" : "/"}${
-              slug.current
-            }/${slug.sku}`
-          : null,
+        slug.current ? `${getBeyoungUrl()}${currentSlug}` : null,
         recommended,
         recommended,
       ];
