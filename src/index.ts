@@ -279,8 +279,8 @@ export function request(
 
 const ByEnvironments = {
   Production: "",
-  Staging: "staging",
-  Development: "dev",
+  Staging: "staging.",
+  Development: "dev.",
 };
 
 function getBeyoungUrl() {
@@ -295,7 +295,7 @@ function getBeyoungUrl() {
   const urlPrefix = `https://`;
   const urlPrefixWithEnvironment =
     urlPrefix + ByEnvironments[configEnvironment];
-  const endpoint = urlPrefixWithEnvironment + ".beyoung.com.br";
+  const endpoint = urlPrefixWithEnvironment + "beyoung.com.br";
 
   return endpoint;
 }
