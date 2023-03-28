@@ -146,11 +146,13 @@ function saveSlugs() {
 
     validateIfHasDuplicatedSlugs(suggestionsSheet);
 
-    const slugs = data.map((row) => ({
-      sku: row[0],
-      slug: row[3],
-      ...(!!row[4] ? { description: row[4] } : {}),
-    }));
+    const slugs = data
+      .map((row) => ({
+        sku: row[0],
+        slug: row[3],
+        ...(!!row[4] ? { description: row[4] } : {}),
+      }))
+      .filter((row) => !!row.slug);
 
     slugs.shift();
 
